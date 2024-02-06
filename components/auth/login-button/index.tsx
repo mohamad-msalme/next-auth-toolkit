@@ -16,7 +16,7 @@ export const LoginBtn: React.FC<React.PropsWithChildren<LoginBtnProps>> = ({
     return <div>it is dialog</div>
   }
   const handelClick = () => {
-    console.log('first')
+    console.log({ first: 'first' })
     router.push('/auth/login')
   }
   return <Button {...btnProps} onClick={handelClick} />

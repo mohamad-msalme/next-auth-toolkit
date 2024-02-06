@@ -1,8 +1,8 @@
-import { LoginBtn } from '@/components/auth/LoginBtn'
-import { Button } from '@/components/ui/button'
+import { LoginBtn } from '@/components/auth/login-button'
+import { db } from '@/lib/db'
 import { cn } from '@/lib/utils'
 
-export default function Home() {
+export default async function Page() {
   return (
     <main className="flex h-full flec-col items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800">
       <div className="space-y-6 text-center">
