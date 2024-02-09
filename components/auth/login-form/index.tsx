@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { LoginForm } from './LoginForm'
 import { CardWrapper } from '../card-wrapper'
 
@@ -10,7 +10,9 @@ export const LoginPage: React.FC = () => {
       backBtnLabel={'Dont have an account yet?'}
       backBtnHref={'/auth/register'}
     >
-      <LoginForm />
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </CardWrapper>
   )
 }

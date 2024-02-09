@@ -1,38 +1,34 @@
 import React from 'react'
-import { login } from '@/actions/login.action'
 import { useForm } from 'react-hook-form'
 import { useError } from '../useError'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { TLoginFormData, LoginSchema } from '@/schemas'
+import { ResetSchema, TResetSchema } from '@/schemas'
+import { resetPassword } from '@/actions/resetPassword.action'
 
-export const useLoginForm = () => {
+export const useResetForm = () => {
   const errorSearchParamsMsg = useError()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [errMsg, setErrorMsg] = React.useState<string | undefined>('')
   const [successMsg, setSuccessMsg] = React.useState<string | undefined>('')
-  const [code, setCode] = React.useState<boolean>(false)
 
-  const form = useForm<TLoginFormData>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<TResetSchema>({
+    resolver: zodResolver(ResetSchema),
     defaultValues: {
-      email: '',
-      password: '',
-      code: ''
+      email: ''
     }
   })
 
-  const onSubmit = async (value: TLoginFormData) => {
+  const onSubmit = async (value: TResetSchema) => {
     setIsSubmitting(true)
-    console.log(value)
-    const data = await login(value)
-    setCode(Boolean(data?.twoFactor))
+    setErrorMsg('')
+    setSuccessMsg('')
+    const data = await resetPassword(value)
     setSuccessMsg(data?.success)
     setErrorMsg(data?.error)
     setIsSubmitting(false)
   }
 
   return {
-    code,
     isSubmitting,
     errMsg: errMsg || errorSearchParamsMsg,
     successMsg,
