@@ -23,7 +23,6 @@ export const useLoginForm = () => {
 
   const onSubmit = async (value: TLoginFormData) => {
     setIsSubmitting(true)
-    console.log(value)
     const data = await login(value)
     setCode(Boolean(data?.twoFactor))
     setSuccessMsg(data?.success)

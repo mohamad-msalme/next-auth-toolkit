@@ -4,6 +4,9 @@ import NextAuth, { DefaultSession } from 'next-auth'
 export type ExtendedUser = DefaultSession['user'] & {
   id: string
   role: UserRole
+  isTwoFactorEnabled: boolean
+  password?: string
+  provider?: string
 }
 
 declare module 'next-auth' {
@@ -23,5 +26,8 @@ declare module 'next-auth/jwt' {
     iat: number
     exp: number
     role: UserRole
+    isTwoFactorEnabled: boolean
+    password?: string
+    provider?: string
   }
 }

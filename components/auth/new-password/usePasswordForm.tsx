@@ -16,7 +16,6 @@ export const usePasswordForm = (token: string) => {
   })
 
   const onSubmit = async (value: TResetPasswordSchema) => {
-    console.log(value)
     setIsSubmitting(true)
     const data = await updatePassword(value, token)
     setErrorMsg(data?.error)

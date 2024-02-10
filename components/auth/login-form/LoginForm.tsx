@@ -21,44 +21,10 @@ import Link from 'next/link'
 export const LoginForm: React.FC = () => {
   const { form, isSubmitting, onSubmit, successMsg, errMsg, code } =
     useLoginForm()
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Email <Astric />
-              </FormLabel>
-              <FormControl>
-                <Input {...field} type="email" placeholder="Enter Email" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Password <Astric />
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="password"
-                  placeholder="Enter Password"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         {code ? (
           <FormField
             control={form.control}
@@ -66,20 +32,62 @@ export const LoginForm: React.FC = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Code <Astric />
+                  Two Factor Code <Astric />
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} type="text" placeholder="Enter Code" />
+                  <Input {...field} type="text" placeholder="123456" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        ) : null}
+        ) : (
+          <>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Email <Astric />
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" placeholder="Enter Email" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Button size="sm" variant="link" asChild className=" px-0 font-normal">
-          <Link href="/auth/reset">Forget password?</Link>
-        </Button>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Password <Astric />
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="password"
+                      placeholder="Enter Password"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <Button
+                    size="sm"
+                    variant="link"
+                    asChild
+                    className=" px-0 font-normal"
+                  >
+                    <Link href="/auth/reset">Forget password?</Link>
+                  </Button>
+                </FormItem>
+              )}
+            />
+          </>
+        )}
         <FormErrorAlert msg={errMsg} />
         <FormSuccessAlert msg={successMsg} />
         <Button className=" w-full" disabled={isSubmitting} type="submit">
@@ -88,7 +96,7 @@ export const LoginForm: React.FC = () => {
               block: isSubmitting
             })}
           />
-          Submit
+          {code ? 'Confirm' : 'Login'}
         </Button>
       </form>
     </Form>

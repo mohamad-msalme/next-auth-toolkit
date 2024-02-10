@@ -4,9 +4,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { getVerificationTokenByEmail } from '@/data/verficication-token'
 import { getPasswordTokenByEmail } from '@/data/password-reset-token'
 import { getTwoFactorTokenByEmail } from '@/data/two-factor-token'
+
+export const CONFIRM_DELAY = 5 * 60 * 1000
 export const generateVerificationToken = async (email: string) => {
   const token = uuidv4()
-  const expires = new Date(new Date().getTime() + 3600 * 1000)
+  const expires = new Date(new Date().getTime() + CONFIRM_DELAY)
 
   const exisitingToken = await getVerificationTokenByEmail(email)
 
@@ -31,8 +33,7 @@ export const generateVerificationToken = async (email: string) => {
 
 export const generatePasswordResetToken = async (email: string) => {
   const token = uuidv4()
-  const expires = new Date(new Date().getTime() + 3600 * 1000)
-  console.log({ expires })
+  const expires = new Date(new Date().getTime() + CONFIRM_DELAY)
   const passwordToken = await getPasswordTokenByEmail(email)
 
   if (passwordToken) {
@@ -56,7 +57,7 @@ export const generatePasswordResetToken = async (email: string) => {
 
 export const generateTwoFactorToken = async (email: string) => {
   const token = crypto.randomInt(100_000, 1_000_000).toString()
-  const expires = new Date(new Date().getTime() + 3600 * 1000)
+  const expires = new Date(new Date().getTime() + CONFIRM_DELAY)
 
   const exisitingToken = await getTwoFactorTokenByEmail(email)
 

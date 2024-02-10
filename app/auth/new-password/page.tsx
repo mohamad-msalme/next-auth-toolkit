@@ -19,7 +19,6 @@ const Page: React.FC<TPage> = async ({ searchParams }) => {
     validToken = Boolean(response.success)
     msgError = response.error ?? ''
   }
-  console.log(validToken)
 
   return (
     <CardWrapper

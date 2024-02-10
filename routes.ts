@@ -11,3 +11,22 @@ export const authRoutes = [
 export const apiAuthPrefix = '/api/auth'
 
 export const DEFFAULT_LOGIN_REDIRECT = '/settings'
+
+export const ProtectedRoutes = [
+  {
+    href: '/server',
+    label: 'Server'
+  },
+  {
+    href: '/client',
+    label: 'Client'
+  },
+  {
+    href: '/admin',
+    label: 'Admin'
+  },
+  {
+    href: '/settings',
+    label: 'Setting'
+  }
+]

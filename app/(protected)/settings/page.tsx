@@ -1,21 +1,9 @@
 import React from 'react'
-import { auth, signOut } from '@/auth'
+import { SettingsPage } from '@/components/auth/settings-page'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 const Page: React.FC = async () => {
-  const session = await auth()
-  return (
-    <div>
-      {JSON.stringify(session)}
-      <form
-        action={async a => {
-          'use server'
-          await signOut()
-        }}
-      >
-        <button type="submit">Sign Out</button>
-      </form>
-    </div>
-  )
+  return <SettingsPage />
 }
 
 export default Page

@@ -5,6 +5,7 @@ import { signIn } from '@/auth'
 import { getUserByEmail } from '@/data/user'
 import { isRedirectError } from 'next/dist/client/components/redirect'
 import { DEFFAULT_LOGIN_REDIRECT } from '@/routes'
+import { getTwoFactorTokenByToken } from '@/data/two-factor-token'
 import { LoginSchema, TLoginFormData } from '@/schemas'
 import { generateTwoFactorToken, generateVerificationToken } from '@/lib/tokens'
 import {
@@ -12,10 +13,7 @@ import {
   sendConfirmationEmail,
   sendTwoFactorTokenEmail
 } from '@/lib/utils'
-import {
-  getTwoFactorTokenByEmail,
-  getTwoFactorTokenByToken
-} from '@/data/two-factor-token'
+import moment from 'moment'
 
 const DEF_RES = {
   twoFactor: false,
@@ -74,15 +72,15 @@ export const login = async (values: TLoginFormData) => {
 
 /**
  * The function `credintionalSignInBy2FA` is used for handling the sign-in process with two-factor
- * authentication.
- * @param {TLoginFormData} values - The `values` parameter is of type `TLoginFormData`, which
- * represents the form data for the login credentials. It contains properties such as `email`,
- * `password`, and `code`.
+ * authentication, including validation of fields, sending a confirmation email with a token, verifying
+ * the token, and performing the sign-in process.
+ * @param {TLoginFormData} values - The `values` parameter is of type `TLoginFormData` and represents
+ * the form data submitted during the login process. It contains fields such as email, password, and
+ * code (for two-factor authentication).
  * @param {string} userId - The `userId` parameter is a string that represents the user's ID. It is
  * used to identify the user for whom the two-factor authentication is being performed.
- * @returns an object with various properties depending on the conditions met during the execution of
- * the function. The returned object will have properties such as `success`, `twoFactor`, and `error`.
- * The specific values of these properties will depend on the logic and data passed to the function.
+ * @returns an object with various properties depending on the conditions met within the function. The
+ * properties that can be returned are:
  */
 export const credintionalSignInBy2FA = async (
   values: TLoginFormData,
@@ -97,10 +95,7 @@ export const credintionalSignInBy2FA = async (
       error: 'Invalid fields'
     }
 
-  const exisitingTwoFActorTokenByEmail = await getTwoFactorTokenByEmail(
-    values.email
-  )
-  if (!exisitingTwoFActorTokenByEmail) {
+  if (!values.code) {
     const twoFactorToken = await generateTwoFactorToken(values.email)
     await sendTwoFactorTokenEmail(values.email, twoFactorToken.token)
 
@@ -111,21 +106,19 @@ export const credintionalSignInBy2FA = async (
     }
   }
 
-  if (!values.code) {
-    return {
-      ...DEF_RES,
-      twoFactor: true,
-
-      error: 'Code is Required'
-    }
+  const exisitingTwoFActorToken = await getTwoFactorTokenByToken(values.code)
+  if (!exisitingTwoFActorToken) {
+    return { ...DEF_RES, twoFactor: true, error: 'Invalid Token' }
   }
 
-  const exisitingTwoFActorTokenByToken = await getTwoFactorTokenByToken(
-    values.code
-  )
+  const hasExpire =
+    new Date(
+      exisitingTwoFActorToken.expires.getTime() +
+        moment().utcOffset() * 60 * 1000
+    ).getTime() < new Date().getTime()
 
-  if (!exisitingTwoFActorTokenByToken) {
-    return { ...DEF_RES, twoFactor: true, error: 'Invalid Token' }
+  if (hasExpire) {
+    return { ...DEF_RES, twoFactor: true, error: 'Token expire' }
   }
 
   await db.twoFactorConfirmation.create({
@@ -135,7 +128,7 @@ export const credintionalSignInBy2FA = async (
   })
 
   await db.twoFactorToken.delete({
-    where: { id: exisitingTwoFActorTokenByToken.id }
+    where: { id: exisitingTwoFActorToken.id }
   })
 
   await credintionalSignIn(values)
@@ -172,7 +165,6 @@ export const credintionalSignIn = async (values: TLoginFormData) => {
   } catch (error) {
     if (isRedirectError(error)) throw error
     if (isAuthError(error)) {
-      console.log({ error })
       switch (error.type) {
         case 'CredentialsSignin':
           return {

@@ -12,6 +12,17 @@ const DEF_RES = {
   error: ''
 }
 
+/**
+ * The `register` function is used to register a user by validating their input fields, hashing their
+ * password, checking if the email is already in use, creating a new user if it doesn't exist,
+ * generating a verification token, and sending a confirmation email.
+ * @param {TRegisterSchema} values - The `values` parameter is an object that contains the user's
+ * registration information. It should have the following properties:
+ * @returns an object with properties `success`, `error`, and other properties from `DEF_RES`. The
+ * specific properties that are returned depend on the conditions in the code. If the `validatedFields`
+ * are not successful, the returned object will have an `error` property set to `'Invalid fields'`. If
+ * `exisitingUser` is found and their email is verified, the returned object
+ */
 export const register = async (values: TRegisterSchema) => {
   const validatedFields = RegisterSchema.safeParse(values)
 
